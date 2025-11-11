@@ -20,15 +20,19 @@ runs:
   steps:
     - shell: bash
       run: |
-        echo "Scanning path: ${{ inputs.path }} with minimum CVE score: ${{ inputs.score }}"
+        echo "Reporting CVEs with CVSSv3 score greater than: ${{ inputs.score }}"
+        echo "Scanning path: ${{ inputs.path }}"
 
         set +e
-        VULNERABILITIES=$(nix run github:nix-community/vulnix -- --json "${{ inputs.path }}")
+        VULNERABILITIES=$(nix run github:nix-community/vulnix -- --json "${{ inputs.path }}" 2>/dev/null)
         set -e
+
+        echo "Vulnerabilities found:"
+        echo "${VULNERABILITIES}" | jq .
 
         RESULTS=$(echo "${VULNERABILITIES}" | jq -r '.[] | select(any(.cvssv3_basescore[]; . > ${{ inputs.score }})) | . as $item | .cvssv3_basescore | to_entries[] | select(.value > ${{ inputs.score }}) | "**Package:** \($item.name)  \n**CVE:** \(.key)  \n**Score:** \(.value)  \n**Description:** \($item.description[.key])\n\n---\n"')
         if [ -z "${RESULTS}" ]; then
-          echo "No vulnerabilities with CVSSv3 score > ${{ inputs.score }} found."
+          echo "No vulnerabilities with CVSSv3 score > ${{ inputs.score }}."
           exit 0
         fi
 

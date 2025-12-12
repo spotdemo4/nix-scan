@@ -16,7 +16,7 @@ nix-scan [packages...]
 ### Action
 
 ```yaml
-- name: Release
+- name: Scan
   uses: spotdemo4/nix-scan@v1.1.0
 ```
 

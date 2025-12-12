@@ -129,7 +129,7 @@
         packages = {
           default = pkgs.stdenv.mkDerivation (finalAttrs: {
             pname = "nix-scan";
-            version = "1.1.0";
+            version = "1.1.1";
 
             src = builtins.path {
               name = "root";

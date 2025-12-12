@@ -93,6 +93,11 @@ function greater_than() {
     return 1
 }
 
+if [[ -z "${GITHUB_TOKEN-}" ]]; then
+    warn "GITHUB_TOKEN is not set, it's essentially required for higher rate limits"
+    exit 1
+fi
+
 # default TERM to linux
 if [[ -n "${CI-}" || -z "${TERM-}" ]]; then
     TERM=linux

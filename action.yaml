@@ -7,9 +7,14 @@ inputs:
     description: nix packages to scan
     required: false
     default: ""
+  token:
+    description: GitHub token
+    required: false
+    default: "${{ github.token }}"
 
 runs:
   using: docker
   image: docker://ghcr.io/spotdemo4/nix-scan:0.0.1
   env:
     ENV_ARGS: ${{ inputs.packages }}
+    GITHUB_TOKEN: ${{ inputs.token }}

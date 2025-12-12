@@ -176,7 +176,7 @@ for url in "${urls[@]}"; do
                 if [[ -n "${GITHUB_STEP_SUMMARY-}" ]]; then
                     {
                     echo "### $(echo "${vuln}" | jq -r '.ghsa_id')"
-                    printf "description:\n%s\n\n" "$(echo "${vuln}" | jq -r '.description')"
+                    printf "%s\n\n" "$(echo "${vuln}" | jq -r '.description')"
                     echo "---"
                     } >> "${GITHUB_STEP_SUMMARY}"
                 fi

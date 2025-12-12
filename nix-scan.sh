@@ -175,7 +175,7 @@ for url in "${urls[@]}"; do
             if [[ $patched == "false" ]]; then
                 if [[ -n "${GITHUB_STEP_SUMMARY-}" ]]; then
                     {
-                    echo "id: $(echo "${vuln}" | jq -r '.cve_id')"
+                    echo "id: $(echo "${vuln}" | jq -r '.ghsa_id')"
                     echo "severity: $(echo "${vuln}" | jq -r '.severity')"
                     echo "summary: $(echo "${vuln}" | jq -r '.summary')"
                     echo "description: $(echo "${vuln}" | jq -r '.description')"

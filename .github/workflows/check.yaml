@@ -25,9 +25,3 @@ jobs:
       - name: Run checks
         if: ${{ steps.init.outputs.duplicate != 'true' }}
         run: nix flake check
-
-      - name: Run
-        if: ${{ steps.init.outputs.duplicate != 'true' }}
-        run: nix build && ./result/bin/nix-scan
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -44,6 +44,26 @@ function array() {
     printf "%s\n" "${array[@]}"
 }
 
+function git_check_safe() {
+    local dir="$1"
+    local safe_dirs=()
+
+    if [[ "$(stat -c "%U" "${dir}")" == "$(whoami)" ]]; then
+        return 0
+    fi
+
+    readarray -t safe_dirs < <(git config --global --get-all safe.directory)
+
+    for safe_dir in "${safe_dirs[@]}"; do
+        if [[ "$(realpath "${dir}")" == "$(realpath "${safe_dir}")" ]]; then
+            return 0
+        fi
+    done
+
+    print "adding '${dir}' to git safe directories"
+    git config --global --add safe.directory "${dir}"
+}
+
 function extract_version() {
     local version_string="$1"
 
@@ -110,6 +130,9 @@ if colors=$(tput -T "${TERM}" colors 2> /dev/null); then
     fi
 fi
 
+# ensure git repo is safe
+git_check_safe "$(pwd)"
+
 if [[ -z "${GITHUB_TOKEN-}" ]]; then
     warn "GITHUB_TOKEN is not set, it's essentially required for higher rate limits"
     exit 1
@@ -130,9 +153,13 @@ if [[ -n "${ENV_ARGS-}" ]]; then
 fi
 
 readarray -t urls < <(
-    nix derivation show -r "${ARGS[@]}" |
-        jq -r '.[] | select(.env.urls) | .env.urls | select(contains("github.com"))' |
-        uniq
+    nix --extra-experimental-features "nix-command flakes" \
+        --accept-flake-config \
+        --no-warn-dirty \
+        --access-tokens "github.com=${GITHUB_TOKEN-}" \
+        derivation show -r "${ARGS[@]}" |
+            jq -r '.[] | select(.env.urls) | .env.urls | select(contains("github.com"))' |
+            uniq
 )
 
 code=0

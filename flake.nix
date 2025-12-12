@@ -155,7 +155,6 @@
             dontBuild = true;
 
             configurePhase = ''
-              chmod +w src
               sed -i '1c\#!${pkgs.runtimeShell}' nix-scan.sh
               sed -i '2c\export PATH="${pkgs.lib.makeBinPath finalAttrs.runtimeInputs}:$PATH"' nix-scan.sh
             '';

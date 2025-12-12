@@ -1,75 +1,15 @@
-name: vulnix-action
-description: vulnerability (CVE) scanner for Nix action
+name: nix scan
+description: scans nix packages for vulnerabilities
 author: trev
-branding:
-  icon: anchor
-  color: gray-dark
 
 inputs:
-  path:
-    description: path to scan
+  packages:
+    description: nix packages to scan
     required: false
-    default: "--system"
-  score:
-    description: minimum CVE score to report
-    required: false
-    default: "0"
+    default: ""
 
 runs:
-  using: composite
-  steps:
-    - name: dependencies
-      shell: bash
-      run: |
-        if ! command -v nix &> /dev/null; then
-          echo "nix not found, please install nix first"
-          exit 1
-        fi
-
-        if ! command -v jq &> /dev/null; then
-          echo "::group::jq not found, installing via nix"
-          JQ_DIR=$(
-            nix shell nixpkgs#jq \
-              --inputs-from . \
-              --command bash \
-              -c "which jq"
-          )
-          JQ_PATH=$(dirname "${JQ_DIR}")
-          export PATH="${JQ_PATH}:${PATH}"
-          echo "${JQ_PATH}" >> $GITHUB_PATH
-          echo "added jq to PATH: ${JQ_PATH}"
-          echo "::endgroup::"
-        fi
-
-    - shell: bash
-      run: |
-        echo "Reporting CVEs with CVSSv3 score greater than: ${{ inputs.score }}"
-        echo "Scanning path: ${{ inputs.path }}"
-
-        set +e
-        VULNERABILITIES=$(nix run github:nix-community/vulnix -- --json "${{ inputs.path }}" 2>/dev/null)
-        set -e
-
-        echo "Vulnerabilities found:"
-        echo "${VULNERABILITIES}" | jq .
-
-        RESULTS=$(echo "${VULNERABILITIES}" | jq -r '.[] | select(any(.cvssv3_basescore[]; . > ${{ inputs.score }})) | . as $item | .cvssv3_basescore | to_entries[] | select(.value > ${{ inputs.score }}) | "**Package:** \($item.name)  \n**CVE:** \(.key)  \n**Score:** \(.value)  \n**Description:** \($item.description[.key])\n\n---\n"')
-        if [ -z "${RESULTS}" ]; then
-          echo "No vulnerabilities with CVSSv3 score > ${{ inputs.score }}."
-          exit 0
-        fi
-
-        echo "## High Severity CVEs"
-        echo ""
-        echo "${RESULTS}"
-
-        if [ -n "$GITHUB_STEP_SUMMARY" ]; then
-          {
-            echo "## <img src="https://brand.nixos.org/internals/nixos-logomark-default-gradient-none.svg" alt="NixOS" width="20"> High Severity CVEs"
-            echo ""
-            echo "${RESULTS}"
-          } >> $GITHUB_STEP_SUMMARY
-        fi
-
-        exit 1
-
+  using: docker
+  image: docker://ghcr.io/spotdemo4/nix-scan:0.0.1
+  env:
+    ENV_ARGS: ${{ inputs.packages }}

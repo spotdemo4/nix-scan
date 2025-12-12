@@ -1,0 +1,28 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+
+permissions:
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: spotdemo4/better-checkout@eaec73409dbe842ad8446ee818976878b0e9108d # v0.0.2
+        with:
+          app-id: ${{ vars.CLIENT_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Release
+        uses: spotdemo4/nix-flake-release@1efff2c8387fde55b3c12d015cdecc794d6538ad # v0.5.1
+        with:
+          github_token: ${{ steps.checkout.outputs.token }}

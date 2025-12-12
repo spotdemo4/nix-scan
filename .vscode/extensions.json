@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "timonwong.shellcheck",
+    "jnoortheen.nix-ide",
+    "esbenp.prettier-vscode"
+  ]
+}

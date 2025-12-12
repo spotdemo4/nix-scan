@@ -25,9 +25,6 @@ jobs:
 
       - name: Run vulnix
         uses: spotdemo4/nix-scan@40360c84234ce8ff01eb90ad9a5a081e15696065 # v1.1.1
-        with:
-          path: result
-          score: 7
 
   actions:
     runs-on: ubuntu-24.04

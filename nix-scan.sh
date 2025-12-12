@@ -165,7 +165,6 @@ for url in "${urls[@]}"; do
             print "id: $(echo "${vuln}" | jq -r '.cve_id')"
             print "severity: $(echo "${vuln}" | jq -r '.severity')"
             print "summary: $(echo "${vuln}" | jq -r '.summary')"
-            print "description: $(echo "${vuln}" | jq -r '.description')"
 
             readarray -t patched_versions < <(echo "${vuln}" | jq -c '.vulnerabilities[].patched_versions')
             for patched_version in "${patched_versions[@]}"; do

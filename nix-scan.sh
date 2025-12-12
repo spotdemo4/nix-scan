@@ -146,9 +146,9 @@ for url in "${urls[@]}"; do
         vulnerable="false"
 
         if [[ -n "${CI-}" ]]; then
-            print "::group::checking ${user}/${repo} (v${version}) for vulnerabilities..."
+            print "::group::checking ${user}/${repo} (v${version})"
         else
-            print "checking ${user}/${repo} (v${version}) for vulnerabilities..."
+            print "checking ${user}/${repo} (v${version})"
         fi
 
         readarray -t vulns < <(curl -L \
@@ -162,15 +162,9 @@ for url in "${urls[@]}"; do
         for vuln in "${vulns[@]}"; do
             patched="true"
 
-            print "id: $(echo "${vuln}" | jq -r '.cve_id')"
-            print "severity: $(echo "${vuln}" | jq -r '.severity')"
-            print "summary: $(echo "${vuln}" | jq -r '.summary')"
-
             readarray -t patched_versions < <(echo "${vuln}" | jq -c '.vulnerabilities[].patched_versions')
             for patched_version in "${patched_versions[@]}"; do
                 patched_version=$(extract_version "${patched_version}")
-                print "patched version: ${patched_version}"
-                
                 if greater_than "$patched_version" "$version"; then
                     patched="false"
                     vulnerable="true"
@@ -178,15 +172,21 @@ for url in "${urls[@]}"; do
                 fi
             done
 
-            if [[ $patched == "false" && -n "${GITHUB_STEP_SUMMARY-}" ]]; then
-                {
-                echo "id: $(echo "${vuln}" | jq -r '.cve_id')"
-                echo "severity: $(echo "${vuln}" | jq -r '.severity')"
-                echo "summary: $(echo "${vuln}" | jq -r '.summary')"
-                echo "description: $(echo "${vuln}" | jq -r '.description')"
-                echo ""
-                echo "---"
-                } >> "${GITHUB_STEP_SUMMARY}"
+            if [[ $patched == "false" ]]; then
+                if [[ -n "${GITHUB_STEP_SUMMARY-}" ]]; then
+                    {
+                    echo "id: $(echo "${vuln}" | jq -r '.cve_id')"
+                    echo "severity: $(echo "${vuln}" | jq -r '.severity')"
+                    echo "summary: $(echo "${vuln}" | jq -r '.summary')"
+                    echo "description: $(echo "${vuln}" | jq -r '.description')"
+                    echo ""
+                    echo "---"
+                    } >> "${GITHUB_STEP_SUMMARY}"
+                fi
+
+                warn "$(echo "${vuln}" | jq -r '.ghsa_id'): $(echo "${vuln}" | jq -r '.summary')"
+            else
+                print "$(echo "${vuln}" | jq -r '.ghsa_id'): $(echo "${vuln}" | jq -r '.summary')"
             fi
         done
 
@@ -199,6 +199,8 @@ for url in "${urls[@]}"; do
         else
             success "${user}/${repo} (v${version})"
         fi
+
+        print ""
     fi
 done
 

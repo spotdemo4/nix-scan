@@ -143,6 +143,7 @@
 
             runtimeInputs = with pkgs; [
               jq
+              ncurses
               nix
               pcre2
             ];

@@ -178,8 +178,7 @@ for url in "${urls[@]}"; do
                     echo "id: $(echo "${vuln}" | jq -r '.ghsa_id')"
                     echo "severity: $(echo "${vuln}" | jq -r '.severity')"
                     echo "summary: $(echo "${vuln}" | jq -r '.summary')"
-                    echo "description: $(echo "${vuln}" | jq -r '.description')"
-                    echo ""
+                    printf "description:\n%s\n" "$(echo "${vuln}" | jq -r '.description')"
                     echo "---"
                     } >> "${GITHUB_STEP_SUMMARY}"
                 fi

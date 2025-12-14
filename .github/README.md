@@ -73,7 +73,7 @@ git clone https://github.com/spotdemo4/nix-scan &&
 contains all dependencies, only use if necessary
 
 ```elm
-wget https://github.com/spotdemo4/nix-scan/releases/download/v1.1.1/nix-scan-1.1.1.tar.xz &&
+wget https://github.com/spotdemo4/nix-scan/releases/latest/download/nix-scan-1.1.1.tar.xz &&
 tar xf nix-scan-1.1.1.tar.xz &&
 ./release
 ```

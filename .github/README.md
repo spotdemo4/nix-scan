@@ -17,7 +17,7 @@ nix-scan [packages...]
 
 ```yaml
 - name: Scan
-  uses: spotdemo4/nix-scan@v1.1.1
+  uses: spotdemo4/nix-scan@v1.1.2
 ```
 
 ### Nix
@@ -54,7 +54,7 @@ docker run -it --rm \
   -v "$(pwd):/app" \
   -w /app \
   -e GITHUB_TOKEN=... \
-  ghcr.io/spotdemo4/nix-scan:1.1.1
+  ghcr.io/spotdemo4/nix-scan:1.1.2
 ```
 
 ### Downloads
@@ -68,12 +68,12 @@ git clone https://github.com/spotdemo4/nix-scan &&
 ./nix-scan/nix-scan.sh
 ```
 
-#### [nix-scan-1.1.1.tar.xz](https://github.com/spotdemo4/nix-scan/releases/download/v1.1.1/nix-scan-1.1.1.tar.xz) - bundle
+#### [nix-scan-1.1.2.tar.xz](https://github.com/spotdemo4/nix-scan/releases/download/v1.1.2/nix-scan-1.1.2.tar.xz) - bundle
 
 contains all dependencies, only use if necessary
 
 ```elm
-wget https://github.com/spotdemo4/nix-scan/releases/latest/download/nix-scan-1.1.1.tar.xz &&
-tar xf nix-scan-1.1.1.tar.xz &&
+wget https://github.com/spotdemo4/nix-scan/releases/latest/download/nix-scan-1.1.2.tar.xz &&
+tar xf nix-scan-1.1.2.tar.xz &&
 ./release
 ```

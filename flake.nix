@@ -67,6 +67,7 @@
             packages = with pkgs; [
               # nix
               flake-checker
+              nix-scan
 
               # actions
               octoscan

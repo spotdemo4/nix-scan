@@ -1,4 +1,4 @@
-# nix vulnerability scanner
+# <img src="https://brand.nixos.org/internals/nixos-logomark-default-gradient-none.svg" alt="NixOS" width="20"> nix vulnerability scanner
 
 ![check](https://github.com/spotdemo4/nix-scan/actions/workflows/check.yaml/badge.svg?branch=main)
 ![vulnerable](https://github.com/spotdemo4/nix-scan/actions/workflows/vulnerable.yaml/badge.svg?branch=main)

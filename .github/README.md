@@ -1,9 +1,9 @@
-# nix package scanner
+# nix vulnerability scanner
 
 ![check](https://github.com/spotdemo4/nix-scan/actions/workflows/check.yaml/badge.svg?branch=main)
 ![vulnerable](https://github.com/spotdemo4/nix-scan/actions/workflows/vulnerable.yaml/badge.svg?branch=main)
 
-Scans a nix package for CVEs. Like [vulnix](https://github.com/nix-community/vulnix) but with way less false positives and more false negatives.
+Scans a nix package/flake for CVEs. Like [vulnix](https://github.com/nix-community/vulnix) but with way less false positives and more false negatives.
 
 ## Usage
 

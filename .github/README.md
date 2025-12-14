@@ -59,7 +59,7 @@ docker run -it --rm \
 
 ### Downloads
 
-#### [nix-scan.sh](/src/nix-scan.sh) - bash script
+#### [nix-scan.sh](/nix-scan.sh) - bash script
 
 requires [jq](https://jqlang.org/) and [pcre2grep](https://github.com/PCRE2Project/pcre2)
 

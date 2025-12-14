@@ -202,7 +202,7 @@ for url in "${urls[@]}"; do
             if [[ $patched == "false" ]]; then
                 if [[ -n "${GITHUB_STEP_SUMMARY-}" ]]; then
                     {
-                    echo "## $(echo "${vuln}" | jq -r '.ghsa_id')"
+                    echo "## ${user}/${repo} - $(echo "${vuln}" | jq -r '.ghsa_id')"
                     printf "%s\n\n" "$(echo "${vuln}" | jq -r '.description')"
                     echo "---"
                     } >> "${GITHUB_STEP_SUMMARY}"

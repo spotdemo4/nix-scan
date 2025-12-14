@@ -15,14 +15,15 @@ jobs:
   release:
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
-        id: checkout
-        uses: spotdemo4/better-checkout@eaec73409dbe842ad8446ee818976878b0e9108d # v0.0.2
+      - name: Initialize
+        id: init
+        uses: spotdemo4/nix-init@e785b8c9ec9fda8072a535786ee5db33429afe4e # v1.12.0
         with:
           app-id: ${{ vars.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
+          shell: release
 
       - name: Release
-        uses: spotdemo4/nix-flake-release@705a37cf5f4a18304b19c853cf9abc575a71a757 # v0.6.0
-        with:
-          github_token: ${{ steps.checkout.outputs.token }}
+        run: nix-flake-release
+        env:
+          GITHUB_TOKEN: ${{ steps.init.outputs.token }}

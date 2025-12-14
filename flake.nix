@@ -1,5 +1,5 @@
 {
-  description = "nix scanner";
+  description = "nix vulnerability scanner";
 
   nixConfig = {
     extra-substituters = [
@@ -55,6 +55,18 @@
               prettier
             ];
             shellHook = pkgs.shellhook.ref;
+          };
+
+          bump = pkgs.mkShell {
+            packages = with pkgs; [
+              bumper
+            ];
+          };
+
+          release = pkgs.mkShell {
+            packages = with pkgs; [
+              nix-flake-release
+            ];
           };
 
           update = pkgs.mkShell {
@@ -173,7 +185,7 @@
             dontFixup = true;
 
             meta = {
-              description = "nix package scanner";
+              description = "Nix vulnerability scanner";
               mainProgram = "nix-scan";
               homepage = "https://github.com/spotdemo4/nix-scan";
               changelog = "https://github.com/spotdemo4/nix-scan/releases/tag/v${finalAttrs.version}";

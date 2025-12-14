@@ -28,9 +28,9 @@ jobs:
         id: init
         uses: spotdemo4/nix-init@e785b8c9ec9fda8072a535786ee5db33429afe4e # v1.12.0
         with:
-          app-id: ${{ vars.CLIENT_ID }}
-          private-key: ${{ secrets.PRIVATE_KEY }}
-          fetch-depth: 0
+          app_id: ${{ vars.CLIENT_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+          fetch_depth: 0
           shell: bump
 
       - name: Bump

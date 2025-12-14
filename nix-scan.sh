@@ -139,7 +139,7 @@ if [[ -z "${GITHUB_TOKEN-}" ]]; then
 fi
 
 if [[ -n "${GITHUB_STEP_SUMMARY-}" ]]; then
-    echo "## <img src=\"https://brand.nixos.org/internals/nixos-logomark-default-gradient-none.svg\" alt=\"NixOS\" width=\"20\"> Nix Scan Report" >> "${GITHUB_STEP_SUMMARY}"
+    echo "# <img src=\"https://brand.nixos.org/internals/nixos-logomark-default-gradient-none.svg\" alt=\"NixOS\" width=\"20\"> Nix Scan Report" >> "${GITHUB_STEP_SUMMARY}"
 fi
 
 # get args
@@ -202,7 +202,7 @@ for url in "${urls[@]}"; do
             if [[ $patched == "false" ]]; then
                 if [[ -n "${GITHUB_STEP_SUMMARY-}" ]]; then
                     {
-                    echo "### $(echo "${vuln}" | jq -r '.ghsa_id')"
+                    echo "## $(echo "${vuln}" | jq -r '.ghsa_id')"
                     printf "%s\n\n" "$(echo "${vuln}" | jq -r '.description')"
                     echo "---"
                     } >> "${GITHUB_STEP_SUMMARY}"

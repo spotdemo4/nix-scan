@@ -9,6 +9,7 @@ concurrency:
   group: release
 
 permissions:
+  contents: read
   packages: write
 
 jobs:
@@ -20,7 +21,7 @@ jobs:
         uses: spotdemo4/nix-init@e785b8c9ec9fda8072a535786ee5db33429afe4e # v1.12.0
         with:
           app_id: ${{ vars.CLIENT_ID }}
-          private_key: ${{ secrets.PRIVATE_KEY }}
+          app_key: ${{ secrets.PRIVATE_KEY }}
           shell: release
 
       - name: Release

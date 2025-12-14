@@ -187,8 +187,8 @@
 
             fromImage = pkgs.image.nix;
             contents = with pkgs; [
-              packages.default
               dockerTools.caCertificates
+              packages.default
             ];
 
             created = "now";

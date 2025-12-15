@@ -16,18 +16,13 @@ jobs:
   release:
     runs-on: ubuntu-24.04
     steps:
-      - name: Initialize
-        id: init
-        uses: spotdemo4/nix-init@e785b8c9ec9fda8072a535786ee5db33429afe4e # v1.12.0
+      - name: Checkout
+        uses: spotdemo4/better-checkout@eaec73409dbe842ad8446ee818976878b0e9108d # v0.0.2
         with:
-          app_id: ${{ vars.CLIENT_ID }}
-          app_key: ${{ secrets.PRIVATE_KEY }}
-          shell: release
+          app-id: ${{ vars.CLIENT_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Release
-        run: nix-flake-release
-        env:
-          GITHUB_TOKEN: ${{ steps.init.outputs.token }}
-          REGISTRY: ghcr.io
-          REGISTRY_USERNAME: ${{ github.actor }}
-          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        uses: spotdemo4/nix-flake-release@af7259a68ea30d029220a19eea905da0eca80c1b # v0.4.4
+        with:
+          github_token: ${{ steps.checkout.outputs.token }}

@@ -24,20 +24,18 @@ jobs:
   bump:
     runs-on: ubuntu-24.04
     steps:
-      - name: Initialize
-        id: init
-        uses: spotdemo4/nix-init@e785b8c9ec9fda8072a535786ee5db33429afe4e # v1.12.0
+      - name: Checkout
+        uses: spotdemo4/better-checkout@eaec73409dbe842ad8446ee818976878b0e9108d # v0.0.2
         with:
-          app_id: ${{ vars.CLIENT_ID }}
-          app_key: ${{ secrets.PRIVATE_KEY }}
-          fetch_depth: 0
-          shell: bump
+          app-id: ${{ vars.CLIENT_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          fetch-depth: 0
 
       - name: Bump
-        run: bumper
-        env:
-          DEBUG: ${{ runner.debug }}
-          FORCE: ${{ inputs.force }}
-          PATHS: |-
+        uses: spotdemo4/bumper@dec2fb0d577c332bc244acfb6bd35ffc88703c21 # v0.4.5
+        with:
+          debug: ${{ runner.debug }}
+          force: ${{ inputs.force }}
+          files: |-
             action.yaml
             .github/README.md

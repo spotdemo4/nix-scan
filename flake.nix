@@ -57,18 +57,6 @@
             shellHook = pkgs.shellhook.ref;
           };
 
-          bump = pkgs.mkShell {
-            packages = with pkgs; [
-              bumper
-            ];
-          };
-
-          release = pkgs.mkShell {
-            packages = with pkgs; [
-              nix-flake-release
-            ];
-          };
-
           update = pkgs.mkShell {
             packages = with pkgs; [
               renovate

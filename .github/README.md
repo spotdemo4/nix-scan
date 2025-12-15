@@ -26,7 +26,7 @@ nix-scan [packages...]
 nix run github:spotdemo4/nix-scan
 ```
 
-#### Flake
+#### flake.nix
 
 ```nix
 inputs = {
@@ -75,5 +75,5 @@ contains all dependencies, only use if necessary
 ```elm
 wget https://github.com/spotdemo4/nix-scan/releases/latest/download/nix-scan-1.1.2.tar.xz &&
 tar xf nix-scan-1.1.2.tar.xz &&
-./release
+./nix-scan
 ```

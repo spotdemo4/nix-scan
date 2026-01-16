@@ -32,7 +32,7 @@ jobs:
           fetch-depth: 0
 
       - name: Bump
-        uses: spotdemo4/bumper@415b3b6011a9242aa3becbc24413ad321d37b9f7 # v0.7.3
+        uses: spotdemo4/bumper@98c42c9dc4905f677550fb9e1da71a19ed6ba576 # v0.8.0
         with:
           debug: ${{ runner.debug }}
           force: ${{ inputs.force }}

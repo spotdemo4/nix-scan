@@ -1,7 +1,7 @@
 # <img src="https://brand.nixos.org/internals/nixos-logomark-default-gradient-none.svg" alt="NixOS" width="24"> nix vulnerability scanner
 
-![check](https://github.com/spotdemo4/nix-scan/actions/workflows/check.yaml/badge.svg?branch=main)
-![vulnerable](https://github.com/spotdemo4/nix-scan/actions/workflows/vulnerable.yaml/badge.svg?branch=main)
+[![check](https://github.com/spotdemo4/nix-scan/actions/workflows/check.yaml/badge.svg?branch=main)](https://github.com/spotdemo4/nix-scan/actions/workflows/check.yaml)
+[![vulnerable](https://github.com/spotdemo4/nix-scan/actions/workflows/vulnerable.yaml/badge.svg?branch=main)](https://github.com/spotdemo4/nix-scan/actions/workflows/vulnerable.yaml)
 
 Scans a nix package/flake for CVEs. Like [vulnix](https://github.com/nix-community/vulnix) but with way less false positives and more false negatives.
 

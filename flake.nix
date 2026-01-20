@@ -37,6 +37,7 @@
             trev.overlays.images
           ];
         };
+        fs = pkgs.lib.fileset;
       in
       rec {
         devShells = {
@@ -76,28 +77,24 @@
         };
 
         checks = pkgs.lib.mkChecks {
-          bash = {
-            src = packages.default;
+          shellcheck = {
+            src = fs.toSource {
+              root = ./.;
+              fileset = fs.fileFilter (file: file.hasExt "sh") ./.;
+            };
             deps = with pkgs; [
               shellcheck
             ];
             script = ''
-              shellcheck nix-scan.sh
-            '';
-          };
-
-          action = {
-            src = ./.;
-            deps = with pkgs; [
-              action-validator
-            ];
-            script = ''
-              action-validator action.yaml
+              shellcheck **/*.sh
             '';
           };
 
           nix = {
-            src = ./.;
+            src = fs.toSource {
+              root = ./.;
+              fileset = fs.fileFilter (file: file.hasExt "nix") ./.;
+            };
             deps = with pkgs; [
               nixfmt-tree
             ];
@@ -107,18 +104,46 @@
           };
 
           actions = {
-            src = ./.;
+            src = fs.toSource {
+              root = ./.;
+              fileset = fs.unions [
+                ./action.yaml
+                ./.github/workflows
+              ];
+            };
             deps = with pkgs; [
-              prettier
               action-validator
               octoscan
+            ];
+            script = ''
+              action-validator **/*.yaml
+              octoscan scan .
+            '';
+          };
+
+          renovate = {
+            src = fs.toSource {
+              root = ./.github;
+              fileset = ./.github/renovate.json;
+            };
+            deps = with pkgs; [
               renovate
             ];
             script = ''
-              prettier --check "**/*.json" "**/*.yaml"
-              action-validator .github/**/*.yaml
-              octoscan scan .github
-              renovate-config-validator .github/renovate.json
+              renovate-config-validator renovate.json
+            '';
+          };
+
+          prettier = {
+            src = fs.toSource {
+              root = ./.;
+              fileset = fs.fileFilter (file: file.hasExt "yaml" || file.hasExt "json" || file.hasExt "md") ./.;
+            };
+            deps = with pkgs; [
+              prettier
+            ];
+            script = ''
+              prettier --check .
             '';
           };
         };

@@ -80,13 +80,13 @@
           shellcheck = {
             src = fs.toSource {
               root = ./.;
-              fileset = fs.fileFilter (file: file.hasExt "sh") ./.;
+              fileset = ./nix-scan.sh;
             };
             deps = with pkgs; [
               shellcheck
             ];
             script = ''
-              shellcheck **/*.sh
+              shellcheck nix-scan.sh
             '';
           };
 

@@ -27,3 +27,5 @@ jobs:
         uses: spotdemo4/flake-release@7640bfccc63c2e2540211a5d48667138d70ff4e6 # v0.14.3
         with:
           github_token: ${{ steps.checkout.outputs.token }}
+          packages: |
+            images.x86_64-linux.default

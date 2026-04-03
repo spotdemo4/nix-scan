@@ -11,7 +11,7 @@
   };
 
   inputs = {
-    systems.url = "github:nix-systems/default";
+    systems.url = "github:spotdemo4/systems";
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     trev = {
       url = "github:spotdemo4/nur";
@@ -22,52 +22,39 @@
 
   outputs =
     {
-      nixpkgs,
+      self,
       trev,
       ...
     }:
     trev.libs.mkFlake (
-      system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [
-            trev.overlays.packages
-            trev.overlays.libs
-            trev.overlays.images
-          ];
-        };
-        fs = pkgs.lib.fileset;
-      in
-      rec {
+      system: pkgs: {
         devShells = {
           default = pkgs.mkShell {
-            name = "default";
             shellHook = pkgs.shellhook.ref;
             packages = with pkgs; [
               # bash
               jq
               pcre2
 
-              # util
-              bumper
-
               # lint
               shellcheck
+
+              # format
               nixfmt
               prettier
+
+              # util
+              bumper
             ];
           };
 
           update = pkgs.mkShell {
-            name = "update";
             packages = with pkgs; [
               renovate
             ];
           };
 
           vulnerable = pkgs.mkShell {
-            name = "vulnerable";
             packages = with pkgs; [
               # nix
               flake-checker
@@ -79,56 +66,37 @@
           };
         };
 
-        checks = pkgs.lib.mkChecks {
+        checks = pkgs.mkChecks {
           shellcheck = {
-            src = fs.toSource {
-              root = ./.;
-              fileset = ./nix-scan.sh;
-            };
+            root = ./.;
+            fileset = pkgs.lib.fileset.fileFilter (file: file.hasExt "sh") ./.;
             deps = with pkgs; [
               shellcheck
             ];
-            script = ''
-              shellcheck nix-scan.sh
-            '';
-          };
-
-          nix = {
-            src = fs.toSource {
-              root = ./.;
-              fileset = fs.fileFilter (file: file.hasExt "nix") ./.;
-            };
-            deps = with pkgs; [
-              nixfmt-tree
-            ];
-            script = ''
-              treefmt --ci
+            forEach = ''
+              shellcheck "$file"
             '';
           };
 
           actions = {
-            src = fs.toSource {
-              root = ./.;
-              fileset = fs.unions [
-                ./action.yaml
-                ./.github/workflows
-              ];
-            };
+            root = ./.;
+            fileset = pkgs.lib.fileset.unions [
+              ./action.yaml
+              ./.github/workflows
+            ];
             deps = with pkgs; [
               action-validator
               octoscan
             ];
-            script = ''
-              action-validator **/*.yaml
-              octoscan scan .
+            forEach = ''
+              action-validator "$file"
+              octoscan scan "$file"
             '';
           };
 
           renovate = {
-            src = fs.toSource {
-              root = ./.github;
-              fileset = ./.github/renovate.json;
-            };
+            root = ./.github;
+            fileset = ./.github/renovate.json;
             deps = with pkgs; [
               renovate
             ];
@@ -137,25 +105,34 @@
             '';
           };
 
+          nix = {
+            root = ./.;
+            filter = file: file.hasExt "nix";
+            deps = with pkgs; [
+              nixfmt
+            ];
+            forEach = ''
+              nixfmt --check "$file"
+            '';
+          };
+
           prettier = {
-            src = fs.toSource {
-              root = ./.;
-              fileset = fs.fileFilter (file: file.hasExt "yaml" || file.hasExt "json" || file.hasExt "md") ./.;
-            };
+            root = ./.;
+            filter = file: file.hasExt "yaml" || file.hasExt "json" || file.hasExt "md";
             deps = with pkgs; [
               prettier
             ];
-            script = ''
-              prettier --check .
+            forEach = ''
+              prettier --check "$file"
             '';
           };
         };
 
-        apps = pkgs.lib.mkApps {
-          dev.script = "./nix-scan.sh";
+        apps = pkgs.mkApps {
+          dev = "./nix-scan.sh";
         };
 
-        packages = {
+        packages = with pkgs.lib; {
           default = pkgs.stdenv.mkDerivation (finalAttrs: {
             pname = "nix-scan";
             version = "1.1.2";
@@ -164,11 +141,6 @@
               name = "root";
               path = ./.;
             };
-
-            nativeBuildInputs = with pkgs; [
-              makeWrapper
-              shellcheck
-            ];
 
             runtimeInputs = with pkgs; [
               jq
@@ -185,12 +157,7 @@
 
             configurePhase = ''
               sed -i '1c\#!${pkgs.runtimeShell}' nix-scan.sh
-              sed -i '2c\export PATH="${pkgs.lib.makeBinPath finalAttrs.runtimeInputs}:$PATH"' nix-scan.sh
-            '';
-
-            doCheck = true;
-            checkPhase = ''
-              shellcheck nix-scan.sh
+              sed -i '2c\export PATH="${makeBinPath finalAttrs.runtimeInputs}:$PATH"' nix-scan.sh
             '';
 
             installPhase = ''
@@ -201,35 +168,25 @@
             dontFixup = true;
 
             meta = {
-              description = "Nix vulnerability scanner";
               mainProgram = "nix-scan";
+              description = "Nix vulnerability scanner";
+              license = licenses.mit;
+              platforms = platforms.all;
               homepage = "https://github.com/spotdemo4/nix-scan";
               changelog = "https://github.com/spotdemo4/nix-scan/releases/tag/v${finalAttrs.version}";
-              platforms = pkgs.lib.platforms.all;
             };
           });
+        };
 
-          image = pkgs.dockerTools.buildLayeredImage {
-            name = packages.default.pname;
-            tag = packages.default.version;
-
+        images = {
+          default = pkgs.mkImage self.packages.${system}.default {
             fromImage = pkgs.image.nix;
-            contents = with pkgs; [
-              dockerTools.caCertificates
-              packages.default
-            ];
-
-            created = "now";
-            meta = packages.default.meta;
-
-            config = {
-              Cmd = [ "${pkgs.lib.meta.getExe packages.default}" ];
-              Env = [ "DOCKER=true" ];
-            };
+            contents = with pkgs; [ dockerTools.caCertificates ];
           };
         };
 
         formatter = pkgs.nixfmt-tree;
+        schemas = trev.schemas;
       }
     );
 }
